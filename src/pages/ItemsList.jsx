@@ -6,15 +6,13 @@ import { toast } from "react-toastify";
 import ItemCard from "../components/ItemCard";
 import CardPagination from "../components/CardPagination";
 
-export const ItemsList= () => {
+export const ItemsList = () => {
   const { mascotas, cargando, borrarMascota } = useContext(MascotasContext);
-  
-  // Lógica para la paginación
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Cuántos elementos mostrar por página
+  const itemsPerPage = 6;
 
   useEffect(() => {
-    // Resetea la página a 1 si las mascotas cambian
     setCurrentPage(1);
   }, [mascotas]);
 
@@ -40,34 +38,45 @@ export const ItemsList= () => {
     });
   };
 
-  if (cargando) return <p className="text-center p-4">Cargando mascotas...</p>;
+  if (cargando)
+    return (
+      <p className="text-center p-4 font-serif text-[#8B4513]">
+        Cargando mascotas...
+      </p>
+    );
 
-  const mascotasPorPagina = mascotas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const mascotasPorPagina = mascotas.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Mascotas en adopción</h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mascotasPorPagina.map((m) => (
-        <ItemCard key={m.id} mascota={m} onEliminar={handleEliminar} />
-        ))}
-      </div>
-
-      <CardPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
-
-      <div className="text-center mt-6">
+    <div className="p-6 font-serif text-[#4D2600]">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-[#8B4513]">
+          Mascotas en Adopción
+        </h2>
         <Link
           to="/items/create"
-          className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-4"
+          className="bg-[#8B4513] hover:bg-[#A0522D] text-white px-6 py-2 rounded-lg font-semibold shadow"
         >
           + Nueva Mascota
         </Link>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {mascotasPorPagina.map((m) => (
+          <ItemCard key={m.id} mascota={m} onEliminar={handleEliminar} />
+        ))}
+      </div>
+
+      <div className="mt-8">
+        <CardPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
     </div>
   );
-}
+};

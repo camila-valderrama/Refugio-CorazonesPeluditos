@@ -46,46 +46,50 @@ export const ItemDetail = () => {
     });
   };
 
-  if (cargando) return <p className="p-4 text-center">Cargando detalles...</p>;
-  if (!mascota) return <p className="p-4 text-center text-red-500">Mascota no encontrada.</p>;
+  if (cargando) return <p className="p-4 text-center font-serif text-[#8B4513]">Cargando detalles...</p>;
+  if (!mascota) return <p className="p-4 text-center text-red-500 font-serif">Mascota no encontrada.</p>;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold mb-4">{mascota.nombre}</h2>
+    <div className="p-6 max-w-2xl mx-auto font-serif text-[#4D2600]">
+      <h2 className="text-3xl font-bold mb-4 text-[#8B4513]">{mascota.nombre}</h2>
+
       {mascota.imagen && (
         <img
           src={mascota.imagen}
           alt={`Foto de ${mascota.nombre}`}
-          className="w-full h-64 object-cover rounded mb-4"
+          className="w-full h-64 object-cover rounded shadow mb-6"
         />
       )}
-      <p><strong>Especie:</strong> {mascota.especie}</p>
-      <p><strong>Raza:</strong> {mascota.raza || "No especificada"}</p>
-      <p><strong>Edad:</strong> {mascota.edad} años</p>
-      <p className="mt-4"><strong>Descripción:</strong><br />{mascota.descripcion}</p>
 
-      <div className="mt-6">
+      <div className="bg-[#FFFDF5] p-6 rounded shadow space-y-3">
+        <p><strong>Especie:</strong> {mascota.especie}</p>
+        <p><strong>Raza:</strong> {mascota.raza || "No especificada"}</p>
+        <p><strong>Edad:</strong> {mascota.edad} años</p>
+        <p><strong>Descripción:</strong><br />{mascota.descripcion}</p>
+      </div>
+
+      <div className="mt-6 flex flex-col sm:flex-row gap-4">
         <button
           onClick={handleEliminar}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
         >
           Eliminar Mascota
         </button>
+
+        <button
+          onClick={() => navigate(`/items/${id}/edit`)}
+          className="bg-[#FFB347] text-white px-4 py-2 rounded hover:bg-[#FFA500] font-semibold"
+        >
+          Editar Mascota
+        </button>
+
+        <button
+          onClick={() => navigate("/items")}
+          className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 font-semibold"
+        >
+          Volver
+        </button>
       </div>
-      <div className="flex gap-4 mt-4">
-        <button
-            onClick={() => navigate(`/items/${id}/edit`)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-            Editar Mascota
-        </button>
-
-        <button
-            onClick={() => navigate("/items")}
-            className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
-            Volver
-        </button>
-        </div>
-
     </div>
   );
-}
+};

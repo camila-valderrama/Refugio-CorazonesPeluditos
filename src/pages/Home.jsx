@@ -1,7 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom"; 
-import { useContext } from "react";
+
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { MascotasContext } from "../context/MascotasContext";
+import ItemCard from "../components/ItemCard";
 
 export const Home = () => {
   const { mascotas } = useContext(MascotasContext);
@@ -14,7 +15,9 @@ export const Home = () => {
         <h1 className="text-5xl font-bold mb-2 text-[#8B4513]">
           Bienvenido a Corazones Peluditos <i className="bi bi-heart-fill text-[#FF6B6B]"></i>
         </h1>
-        <p className="text-lg text-[#5C4033]">Cada huella cuenta, cada historia merece un hogar.</p>
+        <p className="text-lg text-[#5C4033]">
+          Cada huella cuenta, cada historia merece un hogar.
+        </p>
       </section>
 
       {/* Mascotas destacadas */}
@@ -24,21 +27,7 @@ export const Home = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {destacadas.map((m) => (
-            <div
-              key={m.id}
-              className="border rounded-lg shadow p-4 bg-white hover:shadow-lg transition"
-            >
-              {m.imagen && (
-                <img
-                  src={m.imagen}
-                  alt={`Foto de ${m.nombre}`}
-                  className="w-full h-48 object-cover rounded mb-3"
-                />
-              )}
-              <h3 className="text-xl font-semibold">{m.nombre}</h3>
-              <p className="text-[#5C4033]">{m.raza} · {m.especie}</p>
-              <p className="text-sm text-[#8B5E3C]">Edad: {m.edad} años</p>
-            </div>
+            <ItemCard key={m.id} mascota={m} mostrarAcciones={false} />
           ))}
         </div>
         <div className="text-center mt-6">

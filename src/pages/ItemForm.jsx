@@ -17,14 +17,13 @@ export const ItemForm = ({ isEdit = false }) => {
     imagen: "",
   });
 
-  // Precargar datos al editar
   useEffect(() => {
     if (isEdit && id) {
       obtenerUnaMascota(id)
         .then((data) => {
           setForm({
             ...data,
-            edad: String(data.edad), // Aseguramos que sea string para el input
+            edad: String(data.edad),
           });
         })
         .catch(() => toast.error("Error al cargar la mascota"));
@@ -38,10 +37,8 @@ export const ItemForm = ({ isEdit = false }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { nombre, especie, raza, edad } = form;
 
-    // Validaciones
     if (!nombre || !especie || !raza || !edad) {
       toast.error("Todos los campos obligatorios deben estar completos");
       return;
@@ -74,19 +71,19 @@ export const ItemForm = ({ isEdit = false }) => {
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">
+    <div className="p-6 max-w-xl mx-auto font-serif text-[#4D2600]">
+      <h2 className="text-3xl font-bold mb-6 text-[#8B4513] text-center">
         {isEdit ? "Editar Mascota" : "Registrar Nueva Mascota"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 bg-[#FFFDF5] p-6 rounded-lg shadow-md">
         <input
           type="text"
           name="nombre"
           value={form.nombre}
           onChange={handleChange}
           placeholder="Nombre"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
           required
         />
         <input
@@ -95,7 +92,7 @@ export const ItemForm = ({ isEdit = false }) => {
           value={form.especie}
           onChange={handleChange}
           placeholder="Especie (ej: perro, gato)"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
           required
         />
         <input
@@ -104,7 +101,7 @@ export const ItemForm = ({ isEdit = false }) => {
           value={form.raza}
           onChange={handleChange}
           placeholder="Raza"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
           required
         />
         <input
@@ -113,7 +110,7 @@ export const ItemForm = ({ isEdit = false }) => {
           value={form.edad}
           onChange={handleChange}
           placeholder="Edad (en meses)"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
           required
         />
         <textarea
@@ -121,7 +118,7 @@ export const ItemForm = ({ isEdit = false }) => {
           value={form.descripcion}
           onChange={handleChange}
           placeholder="Descripción"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
         />
         <input
           type="url"
@@ -129,12 +126,12 @@ export const ItemForm = ({ isEdit = false }) => {
           value={form.imagen}
           onChange={handleChange}
           placeholder="URL de imagen (opcional)"
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-[#D2B48C] px-3 py-2 rounded"
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-[#FFB347] hover:bg-[#FFA500] text-white py-2 rounded font-semibold"
         >
           {isEdit ? "Guardar Cambios" : "Registrar"}
         </button>

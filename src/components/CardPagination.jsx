@@ -7,18 +7,18 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 mt-6">
+    <div className="flex flex-col items-center gap-3 mt-8 font-serif">
       {/* Texto de página actual */}
-      <p className="text-gray-700">
+      <p className="text-[#4D2600] text-base">
         Página {currentPage} de {totalPages}
       </p>
 
       {/* Botones de navegación */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap justify-center">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+          className="px-4 py-2 rounded bg-[#8B4513] text-white hover:bg-[#5c3310] disabled:bg-gray-300 disabled:text-gray-500 transition"
         >
           Anterior
         </button>
@@ -27,10 +27,10 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`px-4 py-2 rounded ${
+            className={`px-4 py-2 rounded border transition font-medium ${
               currentPage === page
-                ? "bg-blue-600 text-white"
-                : "bg-white text-blue-600 border"
+                ? "bg-[#5c3310] text-white"
+                : "bg-white text-[#8B4513] border-[#8B4513] hover:bg-[#f0e6dc]"
             }`}
           >
             {page}
@@ -40,7 +40,7 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+          className="px-4 py-2 rounded bg-[#8B4513] text-white hover:bg-[#5c3310] disabled:bg-gray-300 disabled:text-gray-500 transition"
         >
           Siguiente
         </button>
@@ -50,3 +50,4 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
 };
 
 export default CardPagination
+
