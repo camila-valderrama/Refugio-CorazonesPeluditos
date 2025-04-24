@@ -1,4 +1,6 @@
-export default function CardPagination({ totalPages, currentPage, onPageChange }) {
+import React from "react";
+
+const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i);
@@ -34,4 +36,6 @@ export default function CardPagination({ totalPages, currentPage, onPageChange }
       </div>
     );
   }
+
+  export default CardPagination
   

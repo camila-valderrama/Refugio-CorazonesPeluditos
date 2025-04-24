@@ -1,6 +1,7 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
-export default function ItemCard({ mascota }) {
+const ItemCard = ({ mascota }) => {
   return (
     <div className="border rounded-lg shadow p-4 bg-white hover:shadow-lg transition">
       {mascota.imagen && (
@@ -25,3 +26,5 @@ export default function ItemCard({ mascota }) {
     </div>
   );
 }
+
+export default ItemCard

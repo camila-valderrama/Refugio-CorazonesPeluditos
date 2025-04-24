@@ -9,7 +9,7 @@ import {
 
 export const MascotasContext = createContext();
 
-export function MascotasProvider({ children }) {
+export const MascotasProvider = ({ children }) => {
   const [mascotas, setMascotas] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -71,3 +71,4 @@ export function MascotasProvider({ children }) {
     </MascotasContext.Provider>
   );
 }
+
