@@ -1,13 +1,20 @@
 import React from "react";
 
 const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-  
-    return (
-      <div className="flex justify-center gap-2 mt-4">
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-2 mt-6">
+      {/* Texto de página actual */}
+      <p className="text-gray-700">
+        Página {currentPage} de {totalPages}
+      </p>
+
+      {/* Botones de navegación */}
+      <div className="flex gap-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -15,17 +22,21 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
         >
           Anterior
         </button>
-  
+
         {pages.map((page) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`px-4 py-2 rounded ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 border'}`}
+            className={`px-4 py-2 rounded ${
+              currentPage === page
+                ? "bg-blue-600 text-white"
+                : "bg-white text-blue-600 border"
+            }`}
           >
             {page}
           </button>
         ))}
-  
+
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
@@ -34,8 +45,8 @@ const CardPagination = ({ totalPages, currentPage, onPageChange }) => {
           Siguiente
         </button>
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-  export default CardPagination
-  
+export default CardPagination

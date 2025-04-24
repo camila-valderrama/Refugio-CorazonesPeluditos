@@ -20,7 +20,7 @@ export const Home = () => {
       {/* Mascotas destacadas */}
       <section>
         <h2 className="text-3xl font-semibold mb-6 text-center text-[#A0522D]">
-          Mascotas en adopción destacadas
+          Mascotas en adopción urgente
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {destacadas.map((m) => (
@@ -59,7 +59,7 @@ export const Home = () => {
         <p className="text-[#5C4033] leading-relaxed">
           En Corazones Peluditos trabajamos día a día para encontrarle un hogar lleno de amor a cada animalito rescatado.
           Nuestro refugio se dedica al cuidado, recuperación y adopción responsable de mascotas abandonadas.
-          Creemos que todos merecen una segunda oportunidad <i className="bi bi-heart text-[#FF6B6B]"></i>
+          Creemos que todos merecen una segunda oportunidad. <i className="bi bi-heart text-[#FF6B6B]"></i>
         </p>
       </section>
 

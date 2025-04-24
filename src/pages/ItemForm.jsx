@@ -17,11 +17,16 @@ export const ItemForm = ({ isEdit = false }) => {
     imagen: "",
   });
 
-  // Si estamos editando, traemos los datos actuales
+  // Precargar datos al editar
   useEffect(() => {
     if (isEdit && id) {
       obtenerUnaMascota(id)
-        .then((data) => setForm(data))
+        .then((data) => {
+          setForm({
+            ...data,
+            edad: String(data.edad), // Aseguramos que sea string para el input
+          });
+        })
         .catch(() => toast.error("Error al cargar la mascota"));
     }
   }, [isEdit, id]);
@@ -34,8 +39,22 @@ export const ItemForm = ({ isEdit = false }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.nombre || !form.especie || !form.edad) {
-      toast.error("Por favor completa los campos obligatorios");
+    const { nombre, especie, raza, edad } = form;
+
+    // Validaciones
+    if (!nombre || !especie || !raza || !edad) {
+      toast.error("Todos los campos obligatorios deben estar completos");
+      return;
+    }
+
+    if (nombre.length < 3 || especie.length < 3 || raza.length < 3) {
+      toast.error("Nombre, especie y raza deben tener al menos 3 caracteres");
+      return;
+    }
+
+    const edadNum = parseInt(edad);
+    if (isNaN(edadNum) || edadNum <= 0) {
+      toast.error("La edad debe ser un número en meses mayor que 0");
       return;
     }
 
@@ -86,13 +105,14 @@ export const ItemForm = ({ isEdit = false }) => {
           onChange={handleChange}
           placeholder="Raza"
           className="w-full border px-3 py-2 rounded"
+          required
         />
         <input
           type="number"
           name="edad"
           value={form.edad}
           onChange={handleChange}
-          placeholder="Edad"
+          placeholder="Edad (en meses)"
           className="w-full border px-3 py-2 rounded"
           required
         />
@@ -121,4 +141,4 @@ export const ItemForm = ({ isEdit = false }) => {
       </form>
     </div>
   );
-}
+};
