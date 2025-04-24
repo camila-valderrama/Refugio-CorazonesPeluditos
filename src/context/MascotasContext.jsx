@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import {
   obtenerMascotas,
   crearMascota,
@@ -72,3 +72,4 @@ export const MascotasProvider = ({ children }) => {
   );
 }
 
+export const useMascotas = () => useContext(MascotasContext)
