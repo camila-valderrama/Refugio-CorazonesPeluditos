@@ -1,15 +1,16 @@
-
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MascotasContext } from "../context/MascotasContext";
 import ItemCard from "../components/ItemCard";
 
 export const Home = () => {
   const { mascotas } = useContext(MascotasContext);
   const destacadas = mascotas.slice(0, 3);
+  const navigate = useNavigate();
 
   return (
     <div className="p-6 space-y-16 font-serif text-[#4D2600]">
+
       {/* Hero */}
       <section className="text-center">
         <h1 className="text-5xl font-bold mb-2 text-[#8B4513]">
@@ -20,23 +21,38 @@ export const Home = () => {
         </p>
       </section>
 
-      {/* Mascotas destacadas */}
-      <section>
-        <h2 className="text-3xl font-semibold mb-6 text-center text-[#A0522D]">
-          Mascotas en adopción urgente
+      {/* Sección de perfiles */}
+      <section className="text-center mb-12 space-y-6">
+        <h2 className="text-3xl font-bold text-[#8B4513] mb-4">
+          ¿Cómo querés comenzar?
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {destacadas.map((m) => (
-            <ItemCard key={m.id} mascota={m} mostrarAcciones={false} />
-          ))}
-        </div>
-        <div className="text-center mt-6">
-          <Link
-            to="/items"
-            className="inline-block bg-[#FFB347] hover:bg-[#FFA500] text-white px-4 py-2 rounded"
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <button
+            onClick={() => navigate("/items")}
+            className="bg-[#FFDAB9] p-6 rounded-lg shadow hover:bg-[#FFC589] transition flex flex-col items-center"
           >
-            Ver todas las mascotas <i className="bi bi-arrow-right-circle-fill ml-1"></i>
-          </Link>
+            <i className="bi bi-search-heart-fill text-3xl text-[#FF6B6B] mb-2"></i>
+            <span className="text-lg font-semibold">Ver Mascotas</span>
+            <p className="text-sm mt-1 text-[#5C4033]">Conocé a quienes buscan un hogar</p>
+          </button>
+
+          <button
+            onClick={() => navigate("/login?tipo=usuario")}
+            className="bg-[#FFE4C4] p-6 rounded-lg shadow hover:bg-[#FFD1A1] transition flex flex-col items-center"
+          >
+            <i className="bi bi-person-circle text-3xl text-[#A0522D] mb-2"></i>
+            <span className="text-lg font-semibold">Soy Adoptante</span>
+            <p className="text-sm mt-1 text-[#5C4033]">Accedé a tu perfil o registrate</p>
+          </button>
+
+          <button
+            onClick={() => navigate("/login?tipo=refugio")}
+            className="bg-[#FFF5E1] p-6 rounded-lg shadow hover:bg-[#FFE9C9] transition flex flex-col items-center"
+          >
+            <i className="bi bi-house-heart-fill text-3xl text-[#DE6E00] mb-2"></i>
+            <span className="text-lg font-semibold">Soy Refugio</span>
+            <p className="text-sm mt-1 text-[#5C4033]">Publicá mascotas y gestioná tu espacio</p>
+          </button>
         </div>
       </section>
 

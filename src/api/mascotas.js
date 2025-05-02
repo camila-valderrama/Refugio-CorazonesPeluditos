@@ -22,9 +22,16 @@ axiosAuth.interceptors.request.use((config) => {
   return config;
 });
 
-export const obtenerMascotas = async () => {
-  const res = await axiosAuth.get("/");
-  return res.data;
+export const obtenerMascotas = async ({ page = 1, especie = "", raza = "", refugio = "" } = {}) => {
+  const params = new URLSearchParams();
+
+  if (page) params.append("page", page);
+  if (especie) params.append("especie", especie);
+  if (raza) params.append("raza", raza);
+  if (refugio) params.append("refugio", refugio);
+
+  const res = await axiosAuth.get(`/?${params.toString()}`);
+  return res.data; // { mascotas, totalPages, currentPage, total }
 };
 
 export const obtenerUnaMascota = async (id) => {
