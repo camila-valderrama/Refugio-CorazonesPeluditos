@@ -1,20 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuthForm } from "../hooks/useAuthForm";
+import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
-import { toast } from "react-toastify";
 
 export const Signup = () => {
-  const navigate = useNavigate();
-
-  const onSubmit = async (form) => {
-    console.log("Registro con:", form);
-    toast.success("Registro exitoso (simulado)");
-    navigate("/login");
-  };
+  const { signup } = useAuth(); // función desde el contexto
 
   const { form, handleChange, handleSubmit } = useAuthForm({
-    onSubmit,
+    onSubmit: signup,
     isRegister: true,
   });
 
@@ -30,3 +23,4 @@ export const Signup = () => {
     </div>
   );
 };
+

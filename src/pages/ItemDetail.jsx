@@ -1,13 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
-import React, { useEffect, useState, useContext } from "react";
-import { MascotasContext } from "../context/MascotasContext";
+import React, { useEffect, useState } from "react";
+import { useMascotas } from "../context/MascotasContext";
+import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import axios from "../api/axios";
 
 export const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { obtenerUnaMascota, borrarMascota } = useContext(MascotasContext);
+  const { obtenerUnaMascota, borrarMascota } = useMascotas();
+  const { user } = useAuth();
+
   const [mascota, setMascota] = useState(null);
   const [cargando, setCargando] = useState(true);
 
@@ -46,6 +50,21 @@ export const ItemDetail = () => {
     });
   };
 
+  const handleAdoptar = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`/mascotas/${id}/adoptar`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success("¡Has adoptado esta mascota!");
+      navigate("/items");
+    } catch (error) {
+      toast.error(error.response?.data?.mensaje || "Error al adoptar");
+    }
+  };
+
   if (cargando) return <p className="p-4 text-center font-serif text-[#8B4513]">Cargando detalles...</p>;
   if (!mascota) return <p className="p-4 text-center text-red-500 font-serif">Mascota no encontrada.</p>;
 
@@ -66,22 +85,40 @@ export const ItemDetail = () => {
         <p><strong>Raza:</strong> {mascota.raza || "No especificada"}</p>
         <p><strong>Edad:</strong> {mascota.edad} años</p>
         <p><strong>Descripción:</strong><br />{mascota.descripcion}</p>
+        {mascota.adoptada && (
+          <p className="text-green-700 font-bold">🐾 ¡Esta mascota fue adoptada!</p>
+        )}
       </div>
 
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
-        <button
-          onClick={handleEliminar}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
-        >
-          Eliminar Mascota
-        </button>
+        {/* Solo el rol refugio puede editar o eliminar */}
+        {user?.rol === "refugio" && (
+          <>
+            <button
+              onClick={handleEliminar}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
+            >
+              Eliminar Mascota
+            </button>
 
-        <button
-          onClick={() => navigate(`/items/${id}/edit`)}
-          className="bg-[#FFB347] text-white px-4 py-2 rounded hover:bg-[#FFA500] font-semibold"
-        >
-          Editar Mascota
-        </button>
+            <button
+              onClick={() => navigate(`/items/${id}/edit`)}
+              className="bg-[#FFB347] text-white px-4 py-2 rounded hover:bg-[#FFA500] font-semibold"
+            >
+              Editar Mascota
+            </button>
+          </>
+        )}
+
+        {/* Solo usuarios pueden adoptar y si no está adoptada */}
+        {user?.rol === "usuario" && !mascota.adoptada && (
+          <button
+            onClick={handleAdoptar}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold"
+          >
+            Adoptar Mascota
+          </button>
+        )}
 
         <button
           onClick={() => navigate("/items")}
@@ -93,3 +130,4 @@ export const ItemDetail = () => {
     </div>
   );
 };
+

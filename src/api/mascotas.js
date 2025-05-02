@@ -1,34 +1,48 @@
 import axios from "axios";
 
-// URL base en MockAPI
-const API_URL = "https://680a36461f1a52874cdfa48f.mockapi.io/api/v1/mascotas";
+const API_URL = "http://localhost:4000/api/mascotas";
 
-// Obtener todas las mascotas
+// Función para obtener el token desde localStorage
+const getToken = () => localStorage.getItem("token");
+
+// Axios con token incluido
+const axiosAuth = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor para agregar el token en cada solicitud
+axiosAuth.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const obtenerMascotas = async () => {
-  const { data } = await axios.get(API_URL);
-  return data;
+  const res = await axiosAuth.get("/");
+  return res.data;
 };
 
-// Obtener una mascota por ID 
-export const obtenerMascotaPorId = async (id) => {
-  const { data } = await axios.get(`${API_URL}/${id}`);
-  return data;
+export const obtenerUnaMascota = async (id) => {
+  const res = await axiosAuth.get(`/${id}`);
+  return res.data;
 };
 
-// Crear nueva mascota
-export const crearMascota = async (nuevaMascota) => {
-  const { data } = await axios.post(API_URL, nuevaMascota);
-  return data;
+export const agregarMascota = async (datos) => {
+  const res = await axiosAuth.post("/", datos);
+  return res.data;
 };
 
-// Editar mascota
-export const editarMascota = async (id, datosActualizados) => {
-  const { data } = await axios.put(`${API_URL}/${id}`, datosActualizados);
-  return data;
+export const actualizarMascota = async (id, datos) => {
+  const res = await axiosAuth.put(`/${id}`, datos);
+  return res.data;
 };
 
-// Eliminar mascota
-export const eliminarMascota = async (id) => {
-  const { data } = await axios.delete(`${API_URL}/${id}`);
-  return data;
+export const borrarMascota = async (id) => {
+  const res = await axiosAuth.delete(`/${id}`);
+  return res.data;
 };
