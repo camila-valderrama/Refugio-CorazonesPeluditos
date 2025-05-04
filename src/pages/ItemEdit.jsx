@@ -5,7 +5,7 @@ import { useMascotaForm } from "../hooks/useMascotaForm";
 import Formulario from "../components/Formulario";
 import { toast } from "react-toastify";
 
-export const ItemEdit = () => {
+const ItemEdit = () => {
   const { id } = useParams();
   const { actualizarMascota, obtenerUnaMascota } = useContext(MascotasContext);
   const navigate = useNavigate();
@@ -30,4 +30,6 @@ export const ItemEdit = () => {
       <Formulario form={form} handleChange={handleChange} handleSubmit={handleSubmit} />
     </div>
   );
-};
+}
+
+export default ItemEdit

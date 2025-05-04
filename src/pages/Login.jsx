@@ -1,28 +1,19 @@
 import React from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useAuthForm } from "../hooks/useAuthForm";
 import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
 import { toast } from "react-toastify";
 
-export const Login = () => {
-  const navigate = useNavigate();
+const Login = () => {
   const [searchParams] = useSearchParams();
-  const tipo = searchParams.get("tipo") || "usuario"; // tipo por defecto
+  const tipo = searchParams.get("tipo") || "usuario";
 
   const { login } = useAuth();
 
   const onSubmit = async (form) => {
     try {
-      const usuario = await login(form); // esto debería devolver el usuario logueado
-      toast.success("Inicio de sesión exitoso");
-
-      // Redireccionar según el rol
-      if (usuario.rol === "refugio") {
-        navigate("/admin/refugio");
-      } else {
-        navigate("/items");
-      }
+      await login(form); // la redirección ya ocurre dentro del contexto
     } catch (error) {
       toast.error("Error al iniciar sesión");
     }
@@ -36,9 +27,12 @@ export const Login = () => {
         Iniciar sesión
       </h2>
 
-      <FormularioAuth form={form} handleChange={handleChange} handleSubmit={handleSubmit} />
+      <FormularioAuth
+        form={form}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+      />
 
-      {/* Enlace a registro con tipo mantenido */}
       <p className="text-center mt-4 text-sm">
         ¿No tenés cuenta?{" "}
         <Link
@@ -51,3 +45,6 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;
+

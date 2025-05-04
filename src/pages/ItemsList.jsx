@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import ItemCard from "../components/ItemCard";
 import CardPagination from "../components/CardPagination";
 
-export const ItemsList = () => {
+const ItemsList = () => {
   const {
     mascotas,
     refugios,
@@ -120,4 +120,6 @@ export const ItemsList = () => {
       )}
     </div>
   );
-};
+}
+
+export default ItemsList

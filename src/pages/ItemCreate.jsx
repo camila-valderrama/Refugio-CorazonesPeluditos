@@ -5,7 +5,7 @@ import { useMascotaForm } from "../hooks/useMascotaForm";
 import Formulario from "../components/Formulario";
 import { toast } from "react-toastify";
 
-export const ItemCreate = () => {
+const ItemCreate = () => {
   const { agregarMascota } = useContext(MascotasContext);
   const navigate = useNavigate();
 
@@ -23,5 +23,7 @@ export const ItemCreate = () => {
       <Formulario form={form} handleChange={handleChange} handleSubmit={handleSubmit} />
     </div>
   );
-};
+}
+
+export default ItemCreate
 

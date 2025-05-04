@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { MascotasContext } from "../context/MascotasContext";
-import ItemCard from "../components/ItemCard";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export const Home = () => {
-  const { mascotas } = useContext(MascotasContext);
-  const destacadas = mascotas.slice(0, 3);
+
+const Home = () => {
   const navigate = useNavigate();
 
   return (
@@ -81,4 +78,6 @@ export const Home = () => {
       </section>
     </div>
   );
-};
+}
+
+export default Home

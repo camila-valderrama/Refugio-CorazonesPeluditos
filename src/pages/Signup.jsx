@@ -6,7 +6,7 @@ import FormularioAuth from "../components/FormularioAuth";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 
-export const Signup = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
 
@@ -69,4 +69,6 @@ export const Signup = () => {
       </p>
     </div>
   );
-};
+}
+
+export default Signup

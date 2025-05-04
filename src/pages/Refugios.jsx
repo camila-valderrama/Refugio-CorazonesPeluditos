@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { obtenerRefugios } from "../api/refugios";
 import ItemCard from "../components/ItemCard";
 
-export const Refugios = () => {
+const Refugios = () => {
   const [refugios, setRefugios] = useState([]);
   const [mascotas, setMascotas] = useState([]);
   const [refugioSeleccionado, setRefugioSeleccionado] = useState(null);
@@ -50,4 +50,6 @@ export const Refugios = () => {
       </div>
     </div>
   );
-};
+}
+
+export default Refugios

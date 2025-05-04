@@ -1,6 +1,6 @@
 # Proyecto Refugio Corazones Peluditos
-Este proyecto fue creado con react, vite y tailwindcss. Usando una api generada en MOCKAPI como prueba. 
-Usa un contexto global para llevar esta API a todo el proyecto.
+Este proyecto fue creado con react, vite y tailwindcss. Usando una api generada en MongoDB Y una api externa para... 
+Se conecta con el backend y usa contextos para conectarlos a traves de axios.
 
 
 ## Deploy

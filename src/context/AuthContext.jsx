@@ -3,54 +3,69 @@ import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// Crear contexto
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
 
-  const login = async ({ email, password }) => {
+  // Verifica token y obtiene datos del usuario
+  const verificarToken = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setCargando(false);
+      return;
+    }
+
     try {
-      const res = await api.post("/auth/login", { email, password });
-
-      // Guardar token en localStorage
-      localStorage.setItem("token", res.data.token);
-
-      // Guardar usuario en estado global
+      const res = await api.get("/auth/perfil", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUser(res.data.usuario);
-
-      toast.success("Inicio de sesión exitoso");
-
-      // Redirección según el rol
-      const rol = res.data.usuario.rol;
-      if (rol === "refugio") {
-        navigate("/refugio/mis-mascotas");
-      } else {
-        navigate("/items");
-      }
     } catch (error) {
-      toast.error(error.response?.data?.mensaje || "Error en login");
+      console.error("Token inválido o expirado");
+      localStorage.removeItem("token");
+      setUser(null);
+    } finally {
+      setCargando(false);
     }
   };
 
-  const signup = async ({ nombre, email, password, rol }) => {
-    try {
-      const res = await api.post("/auth/register", {
-        nombre,
-        email,
-        password,
-        rol, // <-- Incluir rol en la petición
-      });
+  useEffect(() => {
+    verificarToken();
+  }, []);
 
-      toast.success("Usuario registrado");
+  const login = async ({ email, password }) => {
+    const res = await api.post("/auth/login", { email, password });
 
-      // Retornar datos para que Signup.jsx los use
-      return res.data.usuario;
-    } catch (error) {
-      toast.error(error.response?.data?.mensaje || "Error al registrarse");
-      throw error; // Propagar para que lo maneje Signup.jsx
+    localStorage.setItem("token", res.data.token);
+    setUser(res.data.usuario);
+
+    toast.success("Inicio de sesión exitoso");
+
+    const rol = res.data.usuario.rol;
+    if (rol === "refugio") {
+      navigate("/refugio/mis-mascotas");
+    } else {
+      navigate("/items");
     }
+
+    return res.data.usuario;
+  };
+
+  const signup = async ({ nombre, email, password, rol }) => {
+    const res = await api.post("/auth/register", {
+      nombre,
+      email,
+      password,
+      rol,
+    });
+
+    toast.success("Usuario registrado");
+    return res.data.usuario;
   };
 
   const logout = () => {
@@ -61,11 +76,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, cargando, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook para usar el contexto
 export const useAuth = () => useContext(AuthContext);

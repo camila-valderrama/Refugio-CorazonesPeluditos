@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 
-export const ItemDetail = () => {
+const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { obtenerUnaMascota, borrarMascota } = useMascotas();
@@ -129,5 +129,7 @@ export const ItemDetail = () => {
       </div>
     </div>
   );
-};
+}
+
+export default ItemDetail
 
