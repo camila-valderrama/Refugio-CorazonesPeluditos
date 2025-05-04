@@ -21,19 +21,35 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.usuario);
 
       toast.success("Inicio de sesión exitoso");
-      navigate("/items");
+
+      // Redirección según el rol
+      const rol = res.data.usuario.rol;
+      if (rol === "refugio") {
+        navigate("/refugio/mis-mascotas");
+      } else {
+        navigate("/items");
+      }
     } catch (error) {
       toast.error(error.response?.data?.mensaje || "Error en login");
     }
   };
 
-  const signup = async ({ nombre, email, password }) => {
+  const signup = async ({ nombre, email, password, rol }) => {
     try {
-      await api.post("/auth/register", { nombre, email, password });
+      const res = await api.post("/auth/register", {
+        nombre,
+        email,
+        password,
+        rol, // <-- Incluir rol en la petición
+      });
+
       toast.success("Usuario registrado");
-      navigate("/login");
+
+      // Retornar datos para que Signup.jsx los use
+      return res.data.usuario;
     } catch (error) {
       toast.error(error.response?.data?.mensaje || "Error al registrarse");
+      throw error; // Propagar para que lo maneje Signup.jsx
     }
   };
 
@@ -49,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 // Hook para usar el contexto
 export const useAuth = () => useContext(AuthContext);

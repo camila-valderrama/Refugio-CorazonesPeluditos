@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { obtenerRefugios } from "../api/refugios";
-import { obtenerMascotas } from "../api/mascotas";
 import ItemCard from "../components/ItemCard";
 
 export const Refugios = () => {

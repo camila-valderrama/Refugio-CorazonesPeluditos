@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuthForm } from "../hooks/useAuthForm";
 import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
@@ -8,30 +8,34 @@ import axios from "../api/axios";
 
 export const Signup = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const tipo = searchParams.get("tipo") || "usuario"; // usuario o refugio
-
   const { signup } = useAuth();
 
   const onSubmit = async (form) => {
     try {
-      // Registro del usuario
-      const nuevoUsuario = await signup(form);
+      // Registro del usuario con rol seleccionado
+      const nuevoUsuario = await signup({
+        nombre: form.nombre,
+        email: form.email,
+        password: form.password,
+        rol: form.rol,
+      });
 
       toast.success("Registro exitoso");
 
-      // Si es tipo refugio, crear el refugio también
-      if (tipo === "refugio") {
+      // Si es refugio, se crea automáticamente el refugio
+      if (form.rol === "refugio") {
         await axios.post("/refugios", {
-          nombre: form.nombre,
+          nombre: form.nombreRefugio,
           usuario: nuevoUsuario._id,
         });
-        toast.info("Refugio creado automáticamente");
+        toast.info("Refugio creado correctamente");
       }
 
-      navigate(`/login?tipo=${tipo}`);
+      // Redirige al login con el rol en la query
+      navigate(`/login?tipo=${form.rol}`);
     } catch (error) {
       toast.error("Error al registrarse");
+      console.error(error);
     }
   };
 
@@ -53,11 +57,11 @@ export const Signup = () => {
         isRegister={true}
       />
 
-      {/* Enlace a login con tipo */}
+      {/* Enlace a login con tipo según rol seleccionado */}
       <p className="text-center mt-4 text-sm">
         ¿Ya tenés cuenta?{" "}
         <Link
-          to={`/login?tipo=${tipo}`}
+          to={`/login?tipo=${form.rol || "usuario"}`}
           className="text-[#A0522D] font-semibold hover:underline"
         >
           Iniciá sesión
