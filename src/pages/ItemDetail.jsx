@@ -4,7 +4,7 @@ import { useMascotas } from "../context/MascotasContext";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-import axios from "../api/axios";
+import axios from "../api/auth";
 
 const ItemDetail = () => {
   const { id } = useParams();

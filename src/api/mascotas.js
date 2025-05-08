@@ -1,8 +1,4 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api/mascotas",
-});
+import api from "./auth"
 
 export const obtenerMascotasPublicas = () => api.get('/mascotas/')
 export const obtenerMascotasDeRefugio = () => api.get('/mascotas/mascotas-refugio')
@@ -12,4 +8,3 @@ export const actualizarMascota = (id, data) => api.put(`/mascotas/actualizar-mas
 export const eliminarMascota = (id) => api.delete(`/mascotas/eliminar-mascota/${id}`)
 export const adoptarMascota = (id) => api.put(`/mascotas/adoptar/${id}`)
 
-export default api;

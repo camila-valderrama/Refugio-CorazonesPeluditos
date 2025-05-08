@@ -4,16 +4,16 @@ import { useAuthForm } from "../hooks/useAuthForm";
 import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
 import { toast } from "react-toastify";
-import axios from "../api/axios";
+import axios from "../api/auth";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { registrarUsuario } = useAuth();
 
   const onSubmit = async (form) => {
     try {
       // Registro del usuario con rol seleccionado
-      const nuevoUsuario = await signup({
+      const nuevoUsuario = await registrarUsuario({
         nombre: form.nombre,
         email: form.email,
         password: form.password,

@@ -9,11 +9,11 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const tipo = searchParams.get("tipo") || "usuario";
 
-  const { login } = useAuth();
+  const { iniciarSesion } = useAuth(); 
 
   const onSubmit = async (form) => {
     try {
-      await login(form); // la redirección ya ocurre dentro del contexto
+      await iniciarSesion(form);
     } catch (error) {
       toast.error("Error al iniciar sesión");
     }
@@ -47,4 +47,5 @@ const Login = () => {
 };
 
 export default Login;
+
 

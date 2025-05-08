@@ -1,12 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 import {
-  obtenerMascotas as apiObtenerMascotas,
-  obtenerUnaMascota as apiObtenerUnaMascota,
-  agregarMascota as apiAgregarMascota,
-  actualizarMascota as apiActualizarMascota,
-  borrarMascota as apiBorrarMascota,
+  obtenerMascotasPublicas,
+  obtenerMascota,
+  crearMascota,
+  actualizarMascota,
+  eliminarMascota,
 } from "../api/mascotas";
-import axios from "../api/axios";
+
 
 export const MascotasContext = createContext();
 
@@ -17,25 +18,26 @@ export const MascotasProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [cargando, setCargando] = useState(true);
 
-  // Guardamos los filtros seleccionados
   const [filtros, setFiltros] = useState({
     especie: "",
     raza: "",
-    refugio: ""
+    refugio: "",
   });
 
   // Cargar mascotas con paginado y filtros
   const cargarMascotas = async (pagina = 1, filtrosExtra = filtros) => {
     try {
       setCargando(true);
-      const data = await apiObtenerMascotas({
-        page: pagina,
-        limit: 6,
-        ...filtrosExtra
+      const res = await obtenerMascotasPublicas({
+        params: {
+          page: pagina,
+          limit: 6,
+          ...filtrosExtra,
+        },
       });
-      setMascotas(data.mascotas);
-      setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
+      setMascotas(res.data.mascotas);
+      setTotalPages(res.data.totalPages);
+      setCurrentPage(res.data.currentPage);
     } catch (error) {
       console.error("Error al cargar mascotas:", error);
     } finally {
@@ -43,40 +45,30 @@ export const MascotasProvider = ({ children }) => {
     }
   };
 
-  // Cargar lista de refugios para filtros
-  const cargarRefugios = async () => {
-    try {
-      const res = await axios.get("/refugios");
-      setRefugios(res.data);
-    } catch (error) {
-      console.error("Error al cargar refugios:", error);
-    }
-  };
-
-  const agregarMascota = async (mascota) => {
-    const nueva = await apiAgregarMascota(mascota);
+  const createPet = async (mascota) => {
+    const nueva = await crearMascota(mascota);
     await cargarMascotas(currentPage);
     return nueva;
   };
 
-  const actualizarMascota = async (id, datos) => {
-    const actualizada = await apiActualizarMascota(id, datos);
+  const updatePet = async (id, datos) => {
+    const actualizada = await actualizarMascota(id, datos);
     await cargarMascotas(currentPage);
     return actualizada;
   };
 
-  const borrarMascota = async (id) => {
-    await apiBorrarMascota(id);
+  const deletePet = async (id) => {
+    await eliminarMascota(id);
     await cargarMascotas(currentPage);
   };
 
-  const obtenerUnaMascota = async (id) => {
-    return await apiObtenerUnaMascota(id);
+  const getAPet = async (id) => {
+    const res = await obtenerMascota(id);
+    return res.data;
   };
 
   useEffect(() => {
     cargarMascotas();
-    cargarRefugios();
   }, []);
 
   return (
@@ -88,10 +80,10 @@ export const MascotasProvider = ({ children }) => {
         currentPage,
         cargando,
         cargarMascotas,
-        agregarMascota,
-        actualizarMascota,
-        borrarMascota,
-        obtenerUnaMascota,
+        createPet,
+        getAPet,
+        updatePet,
+        deletePet,
         setCurrentPage,
         filtros,
         setFiltros,
