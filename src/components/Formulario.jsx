@@ -1,83 +1,77 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+const Formulario = ({ register, handleSubmit, errors, onSubmit }) => {
+  const navigate = useNavigate();
 
-const Formulario = ({ form, handleChange, handleSubmit }) => {
-    const navigate = useNavigate();
-
-    return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 font-serif text-[#4D2600]">
       <input
         type="text"
-        name="nombre"
-        value={form.nombre}
-        onChange={handleChange}
         placeholder="Nombre"
+        {...register("nombre")}
         className="w-full border px-3 py-2 rounded"
-        required
       />
+      {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre.message}</p>}
+
       <input
         type="text"
-        name="especie"
-        value={form.especie}
-        onChange={handleChange}
         placeholder="Especie (ej: perro, gato)"
+        {...register("especie")}
         className="w-full border px-3 py-2 rounded"
-        required
       />
+      {errors.especie && <p className="text-red-500 text-sm">{errors.especie.message}</p>}
+
       <input
         type="text"
-        name="raza"
-        value={form.raza}
-        onChange={handleChange}
         placeholder="Raza"
+        {...register("raza")}
         className="w-full border px-3 py-2 rounded"
-        required
       />
+      {errors.raza && <p className="text-red-500 text-sm">{errors.raza.message}</p>}
+
       <input
         type="number"
-        name="edad"
-        value={form.edad}
-        onChange={handleChange}
         placeholder="Edad (en meses)"
+        {...register("edad")}
         className="w-full border px-3 py-2 rounded"
-        required
       />
+      {errors.edad && <p className="text-red-500 text-sm">{errors.edad.message}</p>}
+
       <textarea
-        name="descripcion"
-        value={form.descripcion}
-        onChange={handleChange}
         placeholder="Descripción"
+        {...register("descripcion")}
         className="w-full border px-3 py-2 rounded"
       />
+      {errors.descripcion && <p className="text-red-500 text-sm">{errors.descripcion.message}</p>}
+
       <input
         type="url"
-        name="imagen"
-        value={form.imagen}
-        onChange={handleChange}
         placeholder="URL de imagen (opcional)"
+        {...register("imagen")}
         className="w-full border px-3 py-2 rounded"
       />
-        <div className="flex justify-between gap-4 pt-2">
-            <button
-                type="submit"
-                className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                Guardar
-            </button>
+      {errors.imagen && <p className="text-red-500 text-sm">{errors.imagen.message}</p>}
 
-            <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 flex items-center justify-center gap-2"
-                >
-                <i className="bi bi-arrow-left"></i>
-                Volver atrás
-            </button>
-        </div>
+      <div className="flex justify-between gap-4 pt-2">
+        <button
+          type="submit"
+          className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+        >
+          Guardar
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 flex items-center justify-center gap-2"
+        >
+          <i className="bi bi-arrow-left"></i>
+          Volver atrás
+        </button>
+      </div>
     </form>
   );
 };
 
-export default Formulario
-  
+export default Formulario;

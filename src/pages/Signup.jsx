@@ -1,48 +1,65 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuthForm } from "../hooks/useAuthForm";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
-import { toast } from "react-toastify";
 import axios from "../api/auth";
+import { toast } from "react-toastify";
+
+const schema = yup.object().shape({
+  nombre: yup.string().required("El nombre es obligatorio"),
+  email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+  password: yup.string().min(6, "La contraseña debe tener al menos 6 caracteres").required("La contraseña es obligatoria"),
+  rol: yup.string().required("El rol es obligatorio"),
+  nombreRefugio: yup.string().when("rol", {
+    is: "refugio",
+    then: (schema) => schema.required("El nombre del refugio es obligatorio"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});
 
 const Signup = () => {
+  const [searchParams] = useSearchParams();
+  const tipo = searchParams.get("tipo") || "usuario";
+
   const navigate = useNavigate();
   const { registrarUsuario } = useAuth();
 
-  const onSubmit = async (form) => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      rol: tipo,
+    },
+  });
+
+  const rol = watch("rol");
+
+  const onSubmit = async (data) => {
     try {
-      // Registro del usuario con rol seleccionado
-      const nuevoUsuario = await registrarUsuario({
-        nombre: form.nombre,
-        email: form.email,
-        password: form.password,
-        rol: form.rol,
-      });
+      const nuevoUsuario = await registrarUsuario(data);
 
-      toast.success("Registro exitoso");
-
-      // Si es refugio, se crea automáticamente el refugio
-      if (form.rol === "refugio") {
+      if (data.rol === "refugio") {
         await axios.post("/refugios", {
-          nombre: form.nombreRefugio,
+          nombre: data.nombreRefugio,
           usuario: nuevoUsuario._id,
         });
         toast.info("Refugio creado correctamente");
       }
 
-      // Redirige al login con el rol en la query
-      navigate(`/login?tipo=${form.rol}`);
+      toast.success("Registro exitoso");
+      navigate(`/login?tipo=${data.rol}`);
     } catch (error) {
       toast.error("Error al registrarse");
       console.error(error);
     }
   };
-
-  const { form, handleChange, handleSubmit } = useAuthForm({
-    onSubmit,
-    isRegister: true,
-  });
 
   return (
     <div className="p-6 font-serif text-[#4D2600] max-w-md mx-auto">
@@ -51,17 +68,16 @@ const Signup = () => {
       </h2>
 
       <FormularioAuth
-        form={form}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
+        register={register}
+        handleSubmit={handleSubmit(onSubmit)}
+        errors={errors}
         isRegister={true}
       />
 
-      {/* Enlace a login con tipo según rol seleccionado */}
       <p className="text-center mt-4 text-sm">
         ¿Ya tenés cuenta?{" "}
         <Link
-          to={`/login?tipo=${form.rol || "usuario"}`}
+          to={`/login?tipo=${rol || "usuario"}`}
           className="text-[#A0522D] font-semibold hover:underline"
         >
           Iniciá sesión
@@ -69,6 +85,6 @@ const Signup = () => {
       </p>
     </div>
   );
-}
+};
 
-export default Signup
+export default Signup;

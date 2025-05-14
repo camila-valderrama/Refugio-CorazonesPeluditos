@@ -1,25 +1,36 @@
 import React from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { useAuthForm } from "../hooks/useAuthForm";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useAuth } from "../context/AuthContext";
 import FormularioAuth from "../components/FormularioAuth";
 import { toast } from "react-toastify";
+
+const schema = yup.object().shape({
+  email: yup.string().email("Correo inválido").required("El correo es obligatorio"),
+  password: yup.string().min(6, "La contraseña debe tener al menos 6 caracteres").required("La contraseña es obligatoria"),
+});
 
 const Login = () => {
   const [searchParams] = useSearchParams();
   const tipo = searchParams.get("tipo") || "usuario";
 
-  const { iniciarSesion } = useAuth(); 
+  const { iniciarSesion } = useAuth();
 
-  const onSubmit = async (form) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
+
+  const onSubmit = async (data) => {
     try {
-      await iniciarSesion(form);
+      await iniciarSesion(data);
     } catch (error) {
       toast.error("Error al iniciar sesión");
     }
   };
-
-  const { form, handleChange, handleSubmit } = useAuthForm({ onSubmit });
 
   return (
     <div className="p-6 font-serif text-[#4D2600] max-w-md mx-auto">
@@ -28,9 +39,9 @@ const Login = () => {
       </h2>
 
       <FormularioAuth
-        form={form}
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
+        register={register}
+        handleSubmit={handleSubmit(onSubmit)}
+        errors={errors}
       />
 
       <p className="text-center mt-4 text-sm">
@@ -47,5 +58,6 @@ const Login = () => {
 };
 
 export default Login;
+
 
 

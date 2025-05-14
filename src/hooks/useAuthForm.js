@@ -1,42 +1,72 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { toast } from "react-toastify";
 
+// Función para definir el esquema dinámicamente según el tipo de formulario
+const getEsquema = (isRegister) => {
+  return yup.object().shape({
+    ...(isRegister && {
+      nombre: yup
+        .string()
+        .required("El nombre es obligatorio")
+        .min(3, "Debe tener al menos 3 caracteres"),
+    }),
+    email: yup
+      .string()
+      .required("El email es obligatorio")
+      .email("Debe ser un email válido"),
+    password: yup
+      .string()
+      .required("La contraseña es obligatoria")
+      .min(6, "Debe tener al menos 6 caracteres"),
+    ...(isRegister && {
+      rol: yup
+        .string()
+        .oneOf(["usuario", "refugio"], "Debe seleccionar un rol")
+        .required("El rol es obligatorio"),
+      nombreRefugio: yup.string().when("rol", {
+        is: "refugio",
+        then: yup
+          .string()
+          .required("El nombre del refugio es obligatorio")
+          .min(3, "Debe tener al menos 3 caracteres"),
+        otherwise: yup.string().notRequired(),
+      }),
+    }),
+  });
+};
+
 export const useAuthForm = ({ onSubmit, isRegister = false }) => {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    ...(isRegister && { nombre: "" }),
+  const esquema = getEsquema(isRegister);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(esquema),
+    defaultValues: {
+      nombre: "",
+      email: "",
+      password: "",
+      rol: "usuario",
+      nombreRefugio: "",
+    },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (isRegister && !form.nombre) {
-      toast.error("El nombre es obligatorio");
-      return;
-    }
-
-    if (!form.email || !form.password) {
-      toast.error("Todos los campos son obligatorios");
-      return;
-    }
-
-    if (form.password.length < 6) {
-      toast.error("La contraseña debe tener al menos 6 caracteres");
-      return;
-    }
-
+  const onFormSubmit = async (data) => {
     try {
-      await onSubmit(form);
+      await onSubmit(data);
     } catch (error) {
-      toast.error("Error al enviar los datos");
+      toast.error("Error al enviar el formulario");
+      console.error(error);
     }
   };
 
-  return { form, handleChange, handleSubmit };
+  return {
+    register,
+    handleSubmit: handleSubmit(onFormSubmit),
+    errors,
+  };
 };

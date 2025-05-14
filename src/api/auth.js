@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'https://refugio-corazonespeluditos-backend.onrender.com/',
+  baseURL: 'http://localhost:4000/',
 });
 
 export const register = (user) => api.post('/auth/register', user)

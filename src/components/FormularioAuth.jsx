@@ -1,67 +1,65 @@
 import React from "react";
 
-const FormularioAuth = ({ form, handleChange, handleSubmit, isRegister }) => (
+const FormularioAuth = ({ register, handleSubmit, errors, isRegister }) => (
   <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+
+    {/* Campo Nombre */}
     {isRegister && (
       <>
         <input
           type="text"
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
+          {...register("nombre")}
           placeholder="Nombre completo"
           className="w-full border px-3 py-2 rounded"
-          required
         />
+        {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre.message}</p>}
 
-        {/* Selector de tipo de usuario */}
+        {/* Selector de rol */}
         <select
-          name="rol"
-          value={form.rol}
-          onChange={handleChange}
+          {...register("rol")}
           className="w-full border px-3 py-2 rounded"
-          required
         >
           <option value="">Selecciona tu rol</option>
           <option value="usuario">Adoptante</option>
           <option value="refugio">Refugio</option>
         </select>
+        {errors.rol && <p className="text-red-500 text-sm">{errors.rol.message}</p>}
 
-        {/* Campo adicional si elige "refugio" */}
-        {form.rol === "refugio" && (
-          <input
-            type="text"
-            name="nombreRefugio"
-            value={form.nombreRefugio}
-            onChange={handleChange}
-            placeholder="Nombre del Refugio"
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
+        {/* Campo nombre del refugio solo si elige "refugio" */}
+        {/* Este input puede mostrarse con lógica desde el formulario padre si se quiere condicionar visualmente */}
+        <input
+          type="text"
+          {...register("nombreRefugio")}
+          placeholder="Nombre del Refugio"
+          className="w-full border px-3 py-2 rounded"
+        />
+        {errors.nombreRefugio && (
+          <p className="text-red-500 text-sm">{errors.nombreRefugio.message}</p>
         )}
       </>
     )}
 
+    {/* Email */}
     <input
       type="email"
-      name="email"
-      value={form.email}
-      onChange={handleChange}
+      {...register("email")}
       placeholder="Correo electrónico"
       className="w-full border px-3 py-2 rounded"
-      required
     />
+    {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
+    {/* Contraseña */}
     <input
       type="password"
-      name="password"
-      value={form.password}
-      onChange={handleChange}
+      {...register("password")}
       placeholder="Contraseña"
       className="w-full border px-3 py-2 rounded"
-      required
     />
+    {errors.password && (
+      <p className="text-red-500 text-sm">{errors.password.message}</p>
+    )}
 
+    {/* Botón */}
     <button
       type="submit"
       className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
@@ -71,4 +69,4 @@ const FormularioAuth = ({ form, handleChange, handleSubmit, isRegister }) => (
   </form>
 );
 
-export default FormularioAuth
+export default FormularioAuth;

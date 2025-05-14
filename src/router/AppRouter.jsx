@@ -8,6 +8,7 @@ import ItemsList from "../pages/ItemsList";
 import ItemDetail from "../pages/ItemDetail";
 import ItemCreate from "../pages/ItemCreate";
 import ItemEdit from "../pages/ItemEdit";
+import ItemsListRefugios from "../pages/ItemsListRefugios";
 import NotFound from "../pages/NotFound";
 
 
@@ -19,6 +20,7 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/items" element={<ItemsList />} />
+        <Route path="/items-refugios" element={<ItemsListRefugios />} />
         <Route path="/items/create" element={
         <RutaPrivada>
           <ItemCreate />

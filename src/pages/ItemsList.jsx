@@ -1,5 +1,7 @@
+
 import React, { useEffect, useContext } from "react";
 import { MascotasContext } from "../context/MascotasContext";
+import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import ItemCard from "../components/ItemCard";
@@ -19,12 +21,12 @@ const ItemsList = () => {
     setFiltros,
   } = useContext(MascotasContext);
 
-  // Cargar mascotas al cambiar la página o los filtros
+  const { user } = useAuth(); 
+
   useEffect(() => {
     cargarMascotas(currentPage, filtros);
   }, [currentPage, filtros]);
 
-  // Función para eliminar mascota con confirmación
   const handleEliminar = (id) => {
     Swal.fire({
       title: "¿Eliminar mascota?",
@@ -45,12 +47,13 @@ const ItemsList = () => {
     });
   };
 
-  if (cargando)
+  if (cargando) {
     return (
       <p className="text-center p-4 font-serif text-[#8B4513]">
         Cargando mascotas...
       </p>
     );
+  }
 
   return (
     <div className="p-6 font-serif text-[#4D2600] space-y-6">
@@ -58,7 +61,7 @@ const ItemsList = () => {
         Mascotas en Adopción
       </h2>
 
-      {/* Filtros de búsqueda */}
+      {/* Filtros */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <input
           type="text"
@@ -83,11 +86,13 @@ const ItemsList = () => {
         <select
           name="refugio"
           value={filtros.refugio}
-          onChange={(e) => setFiltros({ ...filtros, refugio: e.target.value })}
+          onChange={(e) =>
+            setFiltros({ ...filtros, refugio: e.target.value })
+          }
           className="border px-3 py-2 rounded"
         >
           <option value="">Todos los refugios</option>
-          {refugios.map((r) => (
+          {refugios?.map((r) => (
             <option key={r._id} value={r._id}>
               {r.nombre}
             </option>
@@ -103,12 +108,17 @@ const ItemsList = () => {
           </p>
         ) : (
           mascotas.map((m) => (
-            <ItemCard key={m._id} mascota={m} onEliminar={handleEliminar} />
+            <ItemCard
+              key={m._id}
+              mascota={m}
+              onEliminar={handleEliminar}
+              mostrarAcciones={user?.rol === "refugio"} 
+            />
           ))
         )}
       </div>
 
-      {/* Paginador */}
+      {/* Paginado */}
       {totalPages > 1 && (
         <div className="mt-8">
           <CardPagination
@@ -120,6 +130,6 @@ const ItemsList = () => {
       )}
     </div>
   );
-}
+};
 
-export default ItemsList
+export default ItemsList;

@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const Home = () => {
   const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ const Home = () => {
         <h2 className="text-3xl font-bold text-[#8B4513] mb-4">
           ¿Cómo querés comenzar?
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 max-w-6xl mx-auto">
           <button
             onClick={() => navigate("/items")}
             className="bg-[#FFDAB9] p-6 rounded-lg shadow hover:bg-[#FFC589] transition flex flex-col items-center"
@@ -31,6 +30,15 @@ const Home = () => {
             <i className="bi bi-search-heart-fill text-3xl text-[#FF6B6B] mb-2"></i>
             <span className="text-lg font-semibold">Ver Mascotas</span>
             <p className="text-sm mt-1 text-[#5C4033]">Conocé a quienes buscan un hogar</p>
+          </button>
+
+          <button
+            onClick={() => navigate("/items-refugios")}
+            className="bg-[#FFF5E1] p-6 rounded-lg shadow hover:bg-[#FFE9C9] transition flex flex-col items-center"
+          >
+            <i className="bi bi-houses-fill text-3xl text-[#A0522D] mb-2"></i>
+            <span className="text-lg font-semibold">Ver por Refugio</span>
+            <p className="text-sm mt-1 text-[#5C4033]">Filtrá mascotas según su refugio</p>
           </button>
 
           <button
@@ -44,7 +52,7 @@ const Home = () => {
 
           <button
             onClick={() => navigate("/login?tipo=refugio")}
-            className="bg-[#FFF5E1] p-6 rounded-lg shadow hover:bg-[#FFE9C9] transition flex flex-col items-center"
+            className="bg-[#FFF0E0] p-6 rounded-lg shadow hover:bg-[#FFE0C0] transition flex flex-col items-center"
           >
             <i className="bi bi-house-heart-fill text-3xl text-[#DE6E00] mb-2"></i>
             <span className="text-lg font-semibold">Soy Refugio</span>
@@ -78,6 +86,6 @@ const Home = () => {
       </section>
     </div>
   );
-}
+};
 
-export default Home
+export default Home;

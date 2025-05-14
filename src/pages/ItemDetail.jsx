@@ -9,7 +9,7 @@ import axios from "../api/auth";
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { obtenerUnaMascota, borrarMascota } = useMascotas();
+  const { getAPet, deletePet } = useMascotas();
   const { user } = useAuth();
 
   const [mascota, setMascota] = useState(null);
@@ -18,7 +18,7 @@ const ItemDetail = () => {
   useEffect(() => {
     const cargarMascota = async () => {
       try {
-        const data = await obtenerUnaMascota(id);
+        const data = await getAPet(id);
         setMascota(data);
       } catch (error) {
         console.error("Error al obtener la mascota:", error);
@@ -40,7 +40,7 @@ const ItemDetail = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await borrarMascota(id);
+          await deletePet(id);
           toast.success("Mascota eliminada");
           navigate("/items");
         } catch (error) {
@@ -53,11 +53,15 @@ const ItemDetail = () => {
   const handleAdoptar = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`/mascotas/${id}/adoptar`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!token) {
+        toast.error("Debes iniciar sesión para adoptar");
+        return;
+      }
+
+      await axios.put(`/mascotas/adoptar/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       toast.success("¡Has adoptado esta mascota!");
       navigate("/items");
     } catch (error) {
@@ -65,8 +69,10 @@ const ItemDetail = () => {
     }
   };
 
-  if (cargando) return <p className="p-4 text-center font-serif text-[#8B4513]">Cargando detalles...</p>;
-  if (!mascota) return <p className="p-4 text-center text-red-500 font-serif">Mascota no encontrada.</p>;
+  if (cargando)
+    return <p className="p-4 text-center font-serif text-[#8B4513]">Cargando detalles...</p>;
+  if (!mascota)
+    return <p className="p-4 text-center text-red-500 font-serif">Mascota no encontrada.</p>;
 
   return (
     <div className="p-6 max-w-2xl mx-auto font-serif text-[#4D2600]">
@@ -91,7 +97,7 @@ const ItemDetail = () => {
       </div>
 
       <div className="mt-6 flex flex-col sm:flex-row gap-4">
-        {/* Solo el rol refugio puede editar o eliminar */}
+        {/* Refugio: editar o eliminar */}
         {user?.rol === "refugio" && (
           <>
             <button
@@ -110,7 +116,7 @@ const ItemDetail = () => {
           </>
         )}
 
-        {/* Solo usuarios pueden adoptar y si no está adoptada */}
+        {/* Adoptante: si no está adoptada */}
         {user?.rol === "usuario" && !mascota.adoptada && (
           <button
             onClick={handleAdoptar}
@@ -129,7 +135,6 @@ const ItemDetail = () => {
       </div>
     </div>
   );
-}
+};
 
-export default ItemDetail
-
+export default ItemDetail;

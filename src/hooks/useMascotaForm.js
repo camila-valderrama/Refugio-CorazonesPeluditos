@@ -1,61 +1,67 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { toast } from "react-toastify";
 
-export const useMascotaForm = ({ inicial = {}, onSubmit, isEdit = false, cargarMascota }) => {
-  const [form, setForm] = useState({
-    nombre: "",
-    especie: "",
-    raza: "",
-    edad: "",
-    descripcion: "",
-    imagen: "",
-    ...inicial,
+// Esquema de validación (basado en el schema de Mongoose)
+const esquemaMascota = yup.object().shape({
+  nombre: yup.string().required("El nombre es obligatorio").min(3, "Debe tener al menos 3 caracteres"),
+  especie: yup.string().required("La especie es obligatoria").min(3, "Debe tener al menos 3 caracteres"),
+  raza: yup.string().notRequired().min(3, "Debe tener al menos 3 caracteres"),
+  edad: yup
+    .number()
+    .typeError("La edad debe ser un número")
+    .required("La edad es obligatoria")
+    .positive("La edad debe ser mayor que 0")
+    .integer("La edad debe ser un número entero"),
+  descripcion: yup.string().notRequired(),
+  imagen: yup.string().url("Debe ser una URL válida").notRequired(),
+});
+
+export const useMascotaForm = ({ isEdit = false, cargarMascota, onSubmit }) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(esquemaMascota),
+    defaultValues: {
+      nombre: "",
+      especie: "",
+      raza: "",
+      edad: "",
+      descripcion: "",
+      imagen: "",
+    },
   });
 
   useEffect(() => {
     if (isEdit && cargarMascota) {
       cargarMascota()
-        .then((data) =>
-          setForm({
-            ...data,
-            edad: String(data.edad),
-          })
-        )
+        .then((data) => {
+          Object.entries(data).forEach(([key, value]) => {
+            if (key in esquemaMascota.fields) {
+              setValue(key, value);
+            }
+          });
+        })
         .catch(() => toast.error("Error al cargar la mascota"));
     }
-  }, [isEdit, cargarMascota]);
+  }, [isEdit, cargarMascota, setValue]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { nombre, especie, raza, edad } = form;
-
-    if (!nombre || !especie || !raza || !edad) {
-      toast.error("Todos los campos obligatorios deben estar completos");
-      return;
-    }
-
-    if (nombre.length < 3 || especie.length < 3 || raza.length < 3) {
-      toast.error("Nombre, especie y raza deben tener al menos 3 caracteres");
-      return;
-    }
-
-    const edadNum = parseInt(edad);
-    if (isNaN(edadNum) || edadNum <= 0) {
-      toast.error("La edad debe ser un número en meses mayor que 0");
-      return;
-    }
-
+  const onFormSubmit = async (datos) => {
     try {
-      await onSubmit(form);
+      await onSubmit(datos);
     } catch (error) {
       toast.error("Error al guardar la mascota");
     }
   };
 
-  return { form, handleChange, handleSubmit };
+  return {
+    register,
+    handleSubmit: handleSubmit(onFormSubmit),
+    errors,
+  };
 };
