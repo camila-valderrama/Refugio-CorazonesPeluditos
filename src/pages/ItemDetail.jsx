@@ -9,7 +9,7 @@ import axios from "../api/auth";
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getAPet, deletePet } = useMascotas();
+  const { getAPet, borrarMascota } = useMascotas();
   const { user } = useAuth();
 
   const [mascota, setMascota] = useState(null);
@@ -40,7 +40,7 @@ const ItemDetail = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deletePet(id);
+          await borrarMascota(id);
           toast.success("Mascota eliminada");
           navigate("/items");
         } catch (error) {

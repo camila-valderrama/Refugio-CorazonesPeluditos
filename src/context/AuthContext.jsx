@@ -1,27 +1,36 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import {
-  register,
-  login,
-  profile,
-} from "../api/auth"; // funciones API externas
+import { register, login, profile } from "../api/auth";
+import api from "../api/auth";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [nombreRefugio, setNombreRefugio] = useState(null);
   const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
 
-  // Verifica el token y obtiene perfil
   const verificarPerfil = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return setCargando(false);
+    if (!token) {
+      setCargando(false);
+      return;
+    }
 
     try {
       const res = await profile(token);
-      setUser(res.data.usuario);
+      const usuario = res.data.usuario;
+      setUser(usuario);
+
+      if (usuario.rol === "refugio") {
+        const refugios = await api.get("/refugios");
+        const refugioUsuario = refugios.data.find(
+          (r) => r.usuario === usuario.id
+        );
+        setNombreRefugio(refugioUsuario?.nombre || null);
+      }
     } catch (error) {
       console.error("Token inválido o expirado");
       localStorage.removeItem("token");
@@ -35,30 +44,52 @@ export const AuthProvider = ({ children }) => {
     verificarPerfil();
   }, []);
 
-  // Iniciar sesión
   const iniciarSesion = async ({ email, password }) => {
     const res = await login({ email, password });
+    const usuario = res.data.usuario;
+
     localStorage.setItem("token", res.data.token);
-    setUser(res.data.usuario);
+    setUser(usuario);
+
+    if (usuario.rol === "refugio") {
+      const refugios = await api.get("/refugios");
+      const refugioUsuario = refugios.data.find(
+        (r) => r.usuario === usuario.id
+      );
+      setNombreRefugio(refugioUsuario?.nombre || null);
+    }
+
     toast.success("Inicio de sesión exitoso");
+    navigate("/items");
 
-    const { rol } = res.data.usuario;
-    navigate(rol === "refugio" ? "/refugio/mis-mascotas" : "/items");
-
-    return res.data.usuario;
+    return usuario;
   };
 
-  // Registrar usuario
   const registrarUsuario = async ({ nombre, email, password, rol }) => {
-    const res = await register({ nombre, email, password, rol });
-    toast.success("Usuario registrado");
-    return res.data.usuario;
-  };
+  const res = await register({ nombre, email, password, rol });
 
-  // Cerrar sesión
+  const { usuario, token } = res.data;
+
+  localStorage.setItem("token", token);
+  setUser(usuario);
+
+  if (usuario.rol === "refugio") {
+    const refugios = await api.get("/refugios");
+    const refugioUsuario = refugios.data.find(
+      (r) => r.usuario === usuario.id
+    );
+    setNombreRefugio(refugioUsuario?.nombre || null);
+  }
+
+  toast.success("Usuario registrado");
+  return { usuario, token };
+};
+
+
   const cerrarSesion = () => {
     localStorage.removeItem("token");
     setUser(null);
+    setNombreRefugio(null);
     toast.info("Sesión cerrada");
     navigate("/");
   };
@@ -68,6 +99,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         cargando,
+        nombreRefugio,
         registrarUsuario,
         iniciarSesion,
         cerrarSesion,

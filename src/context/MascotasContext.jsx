@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios";
 import {
   obtenerMascotasPublicas,
   obtenerMascotasDeRefugio,
@@ -9,6 +8,7 @@ import {
   eliminarMascota,
   adoptarMascota,
 } from "../api/mascotas";
+import { obtenerRefugios } from "../api/refugios";
 
 export const MascotasContext = createContext();
 
@@ -25,8 +25,8 @@ export const MascotasProvider = ({ children }) => {
     refugio: "",
   });
 
-  // Mascotas públicas (filtros, paginado)
-  const cargarMascotas = async (pagina = 1, filtrosExtra = filtros) => {
+  // Cargar lista de mascotas con filtros y paginado
+  const cargarMascotas = async (pagina = 1, filtrosExtra = {}) => {
     try {
       setCargando(true);
       const res = await obtenerMascotasPublicas({
@@ -46,7 +46,7 @@ export const MascotasProvider = ({ children }) => {
     }
   };
 
-  // Mascotas del refugio logueado (solo para rol refugio)
+  // Mascotas del refugio logueado
   const cargarMascotasDeRefugio = async () => {
     try {
       setCargando(true);
@@ -62,21 +62,21 @@ export const MascotasProvider = ({ children }) => {
   // Crear nueva mascota
   const createPet = async (mascota) => {
     const nueva = await crearMascota(mascota);
-    await cargarMascotas(currentPage);
+    await cargarMascotas(currentPage, filtros);
     return nueva;
   };
 
   // Editar mascota
   const updatePet = async (id, datos) => {
     const actualizada = await actualizarMascota(id, datos);
-    await cargarMascotas(currentPage);
+    await cargarMascotas(currentPage, filtros);
     return actualizada;
   };
 
   // Eliminar mascota
-  const deletePet = async (id) => {
+  const borrarMascota = async (id) => {
     await eliminarMascota(id);
-    await cargarMascotas(currentPage);
+    await cargarMascotas(currentPage, filtros);
   };
 
   // Obtener una sola mascota
@@ -91,9 +91,20 @@ export const MascotasProvider = ({ children }) => {
     return res.data;
   };
 
+  // Cargar refugios disponibles (solo si hay filtros que lo requieren)
+  const cargarRefugios = async () => {
+    try {
+      const res = await obtenerRefugios();
+      setRefugios(res.data);
+    } catch (error) {
+      console.error("Error al cargar refugios:", error);
+    }
+  };
+
   // Inicial
   useEffect(() => {
     cargarMascotas();
+    cargarRefugios();
   }, []);
 
   return (
@@ -109,7 +120,7 @@ export const MascotasProvider = ({ children }) => {
         createPet,
         getAPet,
         updatePet,
-        deletePet,
+        borrarMascota, 
         adoptar,
         setCurrentPage,
         filtros,

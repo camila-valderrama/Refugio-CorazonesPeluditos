@@ -1,9 +1,9 @@
-
 import React, { useEffect, useContext } from "react";
 import { MascotasContext } from "../context/MascotasContext";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import ItemCard from "../components/ItemCard";
 import CardPagination from "../components/CardPagination";
 
@@ -22,10 +22,15 @@ const ItemsList = () => {
   } = useContext(MascotasContext);
 
   const { user } = useAuth(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
-    cargarMascotas(currentPage, filtros);
-  }, [currentPage, filtros]);
+    const filtrosActualizados = { ...filtros };
+    if (user?.rol === "refugio") {
+      filtrosActualizados.refugio = user.refugioId; 
+    }
+    cargarMascotas(currentPage, filtrosActualizados);
+  }, [currentPage, filtros, user]);
 
   const handleEliminar = (id) => {
     Swal.fire({
@@ -57,50 +62,58 @@ const ItemsList = () => {
 
   return (
     <div className="p-6 font-serif text-[#4D2600] space-y-6">
-      <h2 className="text-3xl font-bold text-[#8B4513] mb-4 text-center">
-        Mascotas en Adopción
-      </h2>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <h2 className="text-3xl font-bold text-[#8B4513]">
+          Mascotas en Adopción
+        </h2>
 
-      {/* Filtros */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <input
-          type="text"
-          name="especie"
-          placeholder="Especie"
-          value={filtros.especie}
-          onChange={(e) =>
-            setFiltros({ ...filtros, especie: e.target.value })
-          }
-          className="border px-3 py-2 rounded"
-        />
-
-        <input
-          type="text"
-          name="raza"
-          placeholder="Raza"
-          value={filtros.raza}
-          onChange={(e) => setFiltros({ ...filtros, raza: e.target.value })}
-          className="border px-3 py-2 rounded"
-        />
-
-        <select
-          name="refugio"
-          value={filtros.refugio}
-          onChange={(e) =>
-            setFiltros({ ...filtros, refugio: e.target.value })
-          }
-          className="border px-3 py-2 rounded"
+      {user?.rol === "refugio" && (
+        <button
+          onClick={() => navigate("/items/create")}
+          className="bg-[#FFB347] hover:bg-[#FFA500] text-white px-4 py-2 rounded font-semibold"
         >
-          <option value="">Todos los refugios</option>
-          {refugios?.map((r) => (
-            <option key={r._id} value={r._id}>
-              {r.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+          + Agregar Mascota
+        </button>
+      )}
+</div>
+      {/* Filtros solo para adoptantes */}
+      {user?.rol === "usuario" && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <input
+            type="text"
+            name="especie"
+            placeholder="Especie"
+            value={filtros.especie}
+            onChange={(e) => setFiltros({ ...filtros, especie: e.target.value })}
+            className="border px-3 py-2 rounded"
+          />
 
-      {/* Resultados */}
+          <input
+            type="text"
+            name="raza"
+            placeholder="Raza"
+            value={filtros.raza}
+            onChange={(e) => setFiltros({ ...filtros, raza: e.target.value })}
+            className="border px-3 py-2 rounded"
+          />
+
+          <select
+            name="refugio"
+            value={filtros.refugio}
+            onChange={(e) => setFiltros({ ...filtros, refugio: e.target.value })}
+            className="border px-3 py-2 rounded"
+          >
+            <option value="">Todos los refugios</option>
+            {refugios?.map((r) => (
+              <option key={r._id} value={r._id}>
+                {r.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Lista de mascotas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {mascotas.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
@@ -112,7 +125,8 @@ const ItemsList = () => {
               key={m._id}
               mascota={m}
               onEliminar={handleEliminar}
-              mostrarAcciones={user?.rol === "refugio"} 
+              mostrarAcciones={user?.rol === "refugio"}
+              esAdoptante={user?.rol === "usuario"}
             />
           ))
         )}

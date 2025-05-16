@@ -12,16 +12,23 @@ const ItemEdit = () => {
   const { user } = useAuth();
   const { getAPet, updatePet } = useMascotas();
 
-  if (user?.rol !== "refugio") {
-    toast.error("Acceso no autorizado");
-    navigate("/items");
-    return null;
-  }
+  // Protección de acceso
+  useEffect(() => {
+    if (user?.rol !== "refugio") {
+      toast.error("Acceso no autorizado");
+      navigate("/items");
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (form) => {
-    await updatePet(id, form);
-    toast.success("Mascota actualizada con éxito");
-    navigate("/items");
+    try {
+      await updatePet(id, form);
+      toast.success("Mascota actualizada con éxito");
+      navigate("/items");
+    } catch (error) {
+      const mensaje = error?.response?.data?.mensaje || "Error al actualizar";
+      toast.error(mensaje);
+    }
   };
 
   const { register, handleSubmit, errors, setValuesFromAPI } = useMascotaForm({
@@ -29,11 +36,20 @@ const ItemEdit = () => {
     isEdit: true,
   });
 
+  // Cargar datos de la mascota al montar
   useEffect(() => {
-    getAPet(id).then((data) => {
-      setValuesFromAPI(data);
-    });
-  }, [id]);
+    const cargarDatos = async () => {
+      try {
+        const data = await getAPet(id);
+        setValuesFromAPI(data);
+      } catch (error) {
+        toast.error("Error al cargar los datos de la mascota");
+        navigate("/items");
+      }
+    };
+
+    cargarDatos();
+  }, [id, getAPet, setValuesFromAPI, navigate]);
 
   return (
     <div className="p-6 max-w-xl mx-auto font-serif text-[#4D2600]">
@@ -49,4 +65,3 @@ const ItemEdit = () => {
 };
 
 export default ItemEdit;
-

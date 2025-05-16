@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMascotas } from "../context/MascotasContext";
 import { useAuth } from "../context/AuthContext";
@@ -11,14 +12,16 @@ const ItemCreate = () => {
   const navigate = useNavigate();
   const { createPet } = useMascotas();
 
-  // Proteger acceso: solo refugios
-  if (user?.rol !== "refugio") {
-    toast.error("Acceso no autorizado");
-    navigate("/items");
-    return null;
-  }
+  useEffect(() => {
+    if (user?.rol !== "refugio") {
+      toast.error("Acceso no autorizado");
+      navigate("/items");
+    }
+  }, [user]);
+
 
   const onSubmit = async (form) => {
+    console.log("onSubmit - datos recibidos:", form)
     await createPet(form);
     toast.success("Mascota registrada con éxito");
     navigate("/items");

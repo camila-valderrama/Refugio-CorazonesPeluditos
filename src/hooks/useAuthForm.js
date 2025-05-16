@@ -3,9 +3,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 
-// Función para definir el esquema dinámicamente según el tipo de formulario
-const getEsquema = (isRegister) => {
-  return yup.object().shape({
+const getEsquema = (isRegister) =>
+  yup.object().shape({
     ...(isRegister && {
       nombre: yup
         .string()
@@ -14,8 +13,8 @@ const getEsquema = (isRegister) => {
     }),
     email: yup
       .string()
-      .required("El email es obligatorio")
-      .email("Debe ser un email válido"),
+      .required("El correo es obligatorio")
+      .email("Debe ser un correo válido"),
     password: yup
       .string()
       .required("La contraseña es obligatoria")
@@ -27,33 +26,36 @@ const getEsquema = (isRegister) => {
         .required("El rol es obligatorio"),
       nombreRefugio: yup.string().when("rol", {
         is: "refugio",
-        then: yup
-          .string()
-          .required("El nombre del refugio es obligatorio")
-          .min(3, "Debe tener al menos 3 caracteres"),
-        otherwise: yup.string().notRequired(),
+        then: (schema) =>
+          schema
+            .required("El nombre del refugio es obligatorio")
+            .min(3, "Debe tener al menos 3 caracteres"),
+        otherwise: (schema) => schema.notRequired(),
       }),
     }),
   });
-};
 
-export const useAuthForm = ({ onSubmit, isRegister = false }) => {
+export const useAuthForm = ({ onSubmit, isRegister = false, defaultValues = {} }) => {
   const esquema = getEsquema(isRegister);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: yupResolver(esquema),
     defaultValues: {
       nombre: "",
       email: "",
       password: "",
-      rol: "usuario",
+      rol: "", 
       nombreRefugio: "",
+      ...defaultValues,
     },
   });
+
+  const rolSeleccionado = watch("rol");
 
   const onFormSubmit = async (data) => {
     try {
@@ -68,5 +70,6 @@ export const useAuthForm = ({ onSubmit, isRegister = false }) => {
     register,
     handleSubmit: handleSubmit(onFormSubmit),
     errors,
+    rolSeleccionado,
   };
 };

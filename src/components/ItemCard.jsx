@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import axios from "../api/auth";
 import { toast } from "react-toastify";
 
-const ItemCard = ({ mascota, onEliminar, mostrarAcciones = true }) => {
+const ItemCard = ({ mascota, onEliminar, mostrarAcciones = true, esAdoptante = false }) => {
   const { user } = useAuth();
   const edadEnMeses = parseInt(mascota.edad);
 
@@ -62,8 +62,8 @@ const ItemCard = ({ mascota, onEliminar, mostrarAcciones = true }) => {
           Ver detalles
         </Link>
 
-        {/* Mostrar solo si el usuario es adoptante y no fue adoptada aún */}
-        {user?.rol === "usuario" && !mascota.adoptada && (
+        {/* Botón Adoptar (solo para adoptante, si no está adoptada) */}
+        {esAdoptante && !mascota.adoptada && (
           <button
             onClick={handleAdoptar}
             className="bg-green-600 text-white px-2 py-1 rounded text-sm hover:bg-green-700"
@@ -72,8 +72,8 @@ const ItemCard = ({ mascota, onEliminar, mostrarAcciones = true }) => {
           </button>
         )}
 
-        {/* Acciones solo para refugio */}
-        {mostrarAcciones && user?.rol === "refugio" && (
+        {/* Acciones para refugio */}
+        {mostrarAcciones && (
           <div className="flex gap-3 items-center text-xl">
             <Link
               to={`/items/${mascota._id}/edit`}
@@ -97,3 +97,4 @@ const ItemCard = ({ mascota, onEliminar, mostrarAcciones = true }) => {
 };
 
 export default ItemCard;
+
