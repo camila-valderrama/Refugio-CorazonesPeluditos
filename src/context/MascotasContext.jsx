@@ -60,10 +60,11 @@ export const MascotasProvider = ({ children }) => {
   };
 
   // Crear nueva mascota
-  const createPet = async (mascota) => {
-    const nueva = await crearMascota(mascota);
-    await cargarMascotas(currentPage, filtros);
-    return nueva;
+ const createPet = async (mascota) => {
+  const token = localStorage.getItem("token");
+  const nueva = await crearMascota(mascota, token);
+  await cargarMascotas(currentPage, filtros);
+  return nueva;
   };
 
   // Editar mascota

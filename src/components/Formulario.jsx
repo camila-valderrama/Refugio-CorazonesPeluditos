@@ -5,7 +5,7 @@ const Formulario = ({ register, handleSubmit, errors, onSubmit }) => {
   const navigate = useNavigate();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 font-serif text-[#4D2600]">
+    <form onSubmit={onSubmit} className="space-y-4 font-serif text-[#4D2600]">
       <input
         type="text"
         placeholder="Nombre"

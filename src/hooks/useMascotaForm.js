@@ -31,7 +31,7 @@ export const useMascotaForm = ({ isEdit = false, cargarMascota, onSubmit }) => {
       nombre: "",
       especie: "",
       raza: "",
-      edad: "",
+      edad: null,
       descripcion: "",
       imagen: "",
     },
